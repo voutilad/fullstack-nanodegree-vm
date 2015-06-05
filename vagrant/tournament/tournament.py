@@ -14,16 +14,16 @@ __ADD_PLAYER = 'INSERT INTO player VALUES (DEFAULT, %s);'
 # Counts players
 __COUNT_PLAYERS = 'SELECT count(*) FROM player'
 # Add match results
-__ADD_MATCH = 'INSERT INTO match VALUES (DEFAULT, DEFAULT, DEFAULT, %s, %s, %d, %d)'
+__ADD_MATCH = 'INSERT INTO match VALUES (DEFAULT, %s, %s)'
 
 """
-Global reference to a connection so we can re-use one across
+Global reference to a private connection so we can re-use one across
 many function calls to connect()
 """
 __conn = None
 
-def __execute(connection, sql, data=None, commit=True):
-    """ Generic execution method for sending data via SQL.
+def __execute(connection, sql, data=None, commit=True, fetchSize=10):
+    """ Private execution method for sending data via SQL.
 
     Args:
         connection (object) - psycopg2.connection instance
@@ -31,6 +31,7 @@ def __execute(connection, sql, data=None, commit=True):
         data (tuple) - psycopg2-friendly tuple
             (see http://initd.org/psycopg/docs/usage.html#the-problem-with-the-query-parameters)
         commit (boolean) - whether or not to commit the transaction
+        fetchSize (int) - number of result rows to fetch
 
     Returns:
         Result of the cursor.fetchone() call...so a tuple of the first result?
@@ -39,17 +40,22 @@ def __execute(connection, sql, data=None, commit=True):
     if data is None:
         data = ()
 
-    cur.execute(sql, data)
-    if commit:
-        connection.commit()
-
     try:
-        result = cur.fetchone()
+        cur.execute(sql, data)
+        if commit:
+            connection.commit()
+        result = cur.fetchmany(fetchSize)
+    except psycopg2.InternalError:
+        # Something is amiss.
+        print '[caught internal error]'
+        result = [()]
+
     except psycopg2.ProgrammingError:
         # No rows
-        result = ()
+        result = [()]
+    finally:
+        cur.close()
 
-    cur.close()
     return result
 
 def connect():
@@ -73,8 +79,10 @@ def deletePlayers():
 def countPlayers():
     """Returns the number of players currently registered."""
     result = __execute(connect(), __COUNT_PLAYERS)
-    return result[0]
-
+    if result and len(result[0]) > 0:
+        return result[0][0]
+    else:
+        return -1
 
 def registerPlayer(name):
     """Adds a player to the tournament database.
@@ -111,7 +119,7 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
-
+    __execute(connect(), __ADD_MATCH, data=(winner, loser), commit=True)
 
 def swissPairings():
     """Returns a list of pairs of players for the next round of a match.
