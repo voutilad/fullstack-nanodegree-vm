@@ -43,15 +43,20 @@ def __execute(connection, sql, data=None, commit=True):
     if commit:
         connection.commit()
 
-    res = cur.fetchone()
+    try:
+        result = cur.fetchone()
+    except psycopg2.ProgrammingError:
+        # No rows
+        result = ()
+
     cur.close()
-    return res
+    return result
 
 def connect():
     """Connect to the PostgreSQL database.  Returns a database connection."""
     global __conn
 
-    if __conn is None:
+    if __conn is None or __conn.closed == 1:
         __conn = psycopg2.connect('dbname=tournament')
 
     return __conn

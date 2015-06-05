@@ -16,20 +16,9 @@ CREATE TABLE player (
   name  text  not null
 );
 
-\echo Creating Tournament Table...
-CREATE TABLE tournament (
-  id  SERIAL PRIMARY KEY NOT NULL,
-  date  date DEFAULT CURRENT_DATE,
-  name  text
-);
-
 \echo Creating Match Table...
 CREATE TABLE match (
   id  SERIAL PRIMARY KEY NOT NULL,
-  home_score  int DEFAULT 0,
-  away_score  int DEFAULT 0,
   winner  int REFERENCES player(id),
-  loser int REFERENCES player(id),
-  round int,
-  tournament_id int REFERENCES tournament(id)
+  loser int REFERENCES player(id)
 );
