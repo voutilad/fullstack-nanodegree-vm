@@ -12,24 +12,24 @@ CREATE DATABASE tournament;
 
 \echo Creating Player Table...
 CREATE TABLE player (
-  id  int primary key not null,
+  id SERIAL PRIMARY KEY NOT NULL,
   name  text  not null
 );
 
 \echo Creating Tournament Table...
 CREATE TABLE tournament (
-  id  int primary key not null,
+  id  SERIAL PRIMARY KEY NOT NULL,
   date  date DEFAULT CURRENT_DATE,
   name  text
 );
 
 \echo Creating Match Table...
 CREATE TABLE match (
-  id  int primary key not null,
+  id  SERIAL PRIMARY KEY NOT NULL,
   home_score  int DEFAULT 0,
   away_score  int DEFAULT 0,
-  winner  int references player(id),
-  loser int references player(id),
+  winner  int REFERENCES player(id),
+  loser int REFERENCES player(id),
   round int,
-  tournament_id int references tournament(id)
+  tournament_id int REFERENCES tournament(id)
 );
