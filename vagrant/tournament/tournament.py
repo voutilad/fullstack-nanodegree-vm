@@ -16,16 +16,8 @@ __COUNT_PLAYERS = 'SELECT count(*) FROM player'
 # Add match results
 __ADD_MATCH = 'INSERT INTO match VALUES (DEFAULT, %s, %s)'
 
-# Get standings
-__STANDINGS = """
-    SELECT p.id, p.name, count(w.winner) AS wins, count(w.id) + count(l.id) as matches FROM
-     player p FULL OUTER JOIN
-      match w on p.id = w.winner
-     FULL OUTER JOIN
-      match l on p.id = l.loser
-    GROUP BY p.id
-    ORDER BY wins DESC;
-    """
+# Get standings from the Standings view
+__STANDINGS = 'SELECT * FROM standings'
 
 """
 Global reference to a private connection so we can re-use one across

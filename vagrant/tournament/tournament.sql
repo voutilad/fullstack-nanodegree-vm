@@ -22,3 +22,14 @@ CREATE TABLE match (
   winner  int REFERENCES player(id),
   loser int REFERENCES player(id)
 );
+
+\echo Creating Standings View
+CREATE VIEW standings 
+AS
+  SELECT p.id, p.name, count(w.winner) AS wins, count(w.id) + count(l.id) as matches FROM
+   player p FULL OUTER JOIN
+    match w on p.id = w.winner
+   FULL OUTER JOIN
+    match l on p.id = l.loser
+  GROUP BY p.id
+  ORDER BY wins DESC;
