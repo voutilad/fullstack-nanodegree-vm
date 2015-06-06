@@ -18,16 +18,13 @@ __ADD_MATCH = 'INSERT INTO match VALUES (DEFAULT, %s, %s)'
 
 # Get standings
 __STANDINGS = """
-    SELECT w.id, w.name, w.wins, w.wins + l.losses AS matches
-        FROM
-     ( SELECT p.id as id, p.name as name, count(mwins.winner) AS wins
-       FROM player p INNER JOIN match mwins ON p.id = mwins.winner
-       GROUP BY p.id) as w
-    JOIN
-     ( SELECT p.id, p.name, count(mlosses.loser) AS losses
-       FROM player p INNER JOIN match mlosses ON p.id = mlosses.loser
-       GROUP BY p.id) as l
-    ON w.id = l.id ORDER BY w.wins DESC, l.losses;"""
+    SELECT p.id, p.name, count(w.winner) AS wins, count(w.id) + count(l.id) as matches FROM
+     player p FULL OUTER JOIN
+      match w on p.id = w.winner
+     FULL OUTER JOIN
+      match l on p.id = l.loser
+    GROUP BY p.id;
+    """
 
 """
 Global reference to a private connection so we can re-use one across
