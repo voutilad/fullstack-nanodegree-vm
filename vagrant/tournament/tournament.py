@@ -15,10 +15,8 @@ __ADD_PLAYER = 'INSERT INTO player VALUES (DEFAULT, %s);'
 __COUNT_PLAYERS = 'SELECT count(*) FROM player'
 # Add match results
 __ADD_MATCH = 'INSERT INTO match VALUES (DEFAULT, %s, %s)'
-
 # Get standings from the Standings view
 __STANDINGS = 'SELECT * FROM standings'
-
 # Get the current pairings from the Pairings View
 __PAIRINGS = 'SELECT * FROM pairings'
 
@@ -53,12 +51,10 @@ def __execute(connection, sql, data=None, commit=True, fetchSize=10):
         result = cur.fetchmany(fetchSize)
     except psycopg2.InternalError:
         # Something is amiss.
-        print '[caught internal error]'
-        result = [()]
-
+        result = None
     except psycopg2.ProgrammingError:
         # No rows
-        result = [()]
+        result = None
     finally:
         cur.close()
 
@@ -143,14 +139,5 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
-    # Pairings table looks like:
-    #  pairing  |  player_id | player_name |
-    #  --------------------------------------
-    #   0       |   1       |   player1
-    #   0       |   2       |   player2
-    #   1       |   3       |   player3
-    #   1       |   4       |   player4
 
-    pairings = __execute(connect(), __PAIRINGS, fetchSize=1000)
-    print pairings
-    return pairings
+    return __execute(connect(), __PAIRINGS, fetchSize=1000)
