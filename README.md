@@ -78,5 +78,6 @@ Success!  All tests pass!
 ## References
 In identifying the approach for creating the Standings and Swiss Pairings, I consulted a few sources.
 
-* TODO: link to PostgreSQL doc
-* http://stackoverflow.com/questions/3397121/how-to-show-row-numbers-in-postgresql-query
+* PostgreSQL docs: http://www.postgresql.org/docs/9.3/static/index.html
+* Pyscopg Basic Usage: http://initd.org/psycopg/docs/usage.html
+* PostgreSQL row_number() example: http://stackoverflow.com/questions/3397121/how-to-show-row-numbers-in-postgresql-query
