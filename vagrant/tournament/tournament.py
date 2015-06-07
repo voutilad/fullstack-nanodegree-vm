@@ -19,6 +19,9 @@ __ADD_MATCH = 'INSERT INTO match VALUES (DEFAULT, %s, %s)'
 # Get standings from the Standings view
 __STANDINGS = 'SELECT * FROM standings'
 
+# Get the current pairings from the Pairings View
+__PAIRINGS = 'SELECT * FROM pairings'
+
 """
 Global reference to a private connection so we can re-use one across
 many function calls to connect()
@@ -113,7 +116,7 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-    return __execute(connect(), __STANDINGS, fetchSize=100)
+    return __execute(connect(), __STANDINGS, fetchSize=1000)
 
 
 def reportMatch(winner, loser):
@@ -140,14 +143,14 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
-    standings = playerStandings()
+    # Pairings table looks like:
+    #  pairing  |  player_id | player_name |
+    #  --------------------------------------
+    #   0       |   1       |   player1
+    #   0       |   2       |   player2
+    #   1       |   3       |   player3
+    #   1       |   4       |   player4
 
-    if standings:
-        pairings = []
-        for i in range(0, len(standings)/2):
-            player1 = (standings[2*i][0], standings[2*i][1])
-            player2 = (standings[2*i+1][0], standings[2*i+1][1])
-            pairings.append((player1[0], player1[1], player2[0], player2[1]))
-        return pairings
-    else:
-        return None
+    pairings = __execute(connect(), __PAIRINGS, fetchSize=1000)
+    print pairings
+    return pairings

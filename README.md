@@ -74,3 +74,9 @@ Adding player "Pinkie Pie"
 8. After one match, players with one win are paired.
 Success!  All tests pass!
 `````
+
+## References
+In identifying the approach for creating the Standings and Swiss Pairings, I consulted a few sources.
+
+* TODO: link to PostgreSQL doc
+* http://stackoverflow.com/questions/3397121/how-to-show-row-numbers-in-postgresql-query
